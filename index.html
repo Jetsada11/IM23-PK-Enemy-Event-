@@ -3,546 +3,968 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Bounty Calculator / Tax 30%</title>
+  <title>Bounty Board IM023</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Exo+2:wght@300;400;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
-    :root{
-      --bg:#0b0b0d;
-      --panel:#121214;
-      --muted:#9aa0a6;
-      --accent:#e03b3b; /* red */
-      --accent-2:#ff6b6b;
-      --money:#00c851; /* green for money */
-      --money-light:#00ff41;
-      --glass: rgba(255,255,255,0.03);
-      --glass-2: rgba(255,255,255,0.02);
+    :root {
+      --bg: #080a0c;
+      --panel: #0d1117;
+      --panel2: #111820;
+      --border: rgba(255,180,50,0.12);
+      --border-bright: rgba(255,180,50,0.4);
+      --gold: #ffb432;
+      --gold-dim: #c87d10;
+      --gold-bright: #ffd060;
+      --red: #ff3c3c;
+      --red-dim: #c02020;
+      --green: #00e87a;
+      --green-dim: #009950;
+      --cyan: #00d4ff;
+      --muted: #556070;
+      --text: #d4dde8;
+      --text-bright: #eef4ff;
+      --glow-gold: 0 0 18px rgba(255,180,50,0.35);
+      --glow-red: 0 0 18px rgba(255,60,60,0.35);
+      --glow-green: 0 0 18px rgba(0,232,122,0.35);
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;padding:32px;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans Thai',"Helvetica Neue",Arial;
-      background: radial-gradient(800px 400px at 10% 10%, rgba(255,0,0,0.03), transparent), var(--bg);
-      color:#eef2f5;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      font-size:18px;
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: 'Exo 2', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
     }
-
-    .container{
-      max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:32px;
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px);
     }
-
-    .card{
-      background:linear-gradient(180deg,var(--panel), #0e0e10);
-      border-radius:14px;padding:28px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 6px 30px rgba(0,0,0,0.6);
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,180,50,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,180,50,0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
     }
-
-    h1{margin:0 0 12px;font-size:24px}
-    p.lead{margin:0 0 18px;color:var(--muted);font-size:16px}
-
-    .buttons{display:flex;flex-wrap:wrap;gap:16px}
-    .amt-btn{
-      background:linear-gradient(180deg, rgba(0,200,81,0.16), rgba(0,200,81,0.06));
-      border:1px solid rgba(0,200,81,0.22);
-      padding:18px 22px;border-radius:12px;font-weight:700;cursor:pointer;min-width:140px;text-align:center;
-      box-shadow:0 4px 14px rgba(0,200,81,0.06) inset;transition:transform .12s ease, box-shadow .15s;
-      color:#00ff41;
-      font-size:16px;
+    .wrap {
+      position: relative; z-index: 1;
+      max-width: 1260px;
+      margin: 0 auto;
+      padding: 24px 20px 40px;
     }
-    .amt-btn:hover{transform:translateY(-4px);box-shadow:0 6px 20px rgba(0,200,81,0.12) inset}
-    .amt-btn.active{border-color:#ffffffaa;box-shadow:0 0 0 1px #ffffff33,0 6px 22px rgba(0,255,65,0.3) inset;transform:translateY(-2px);}
-    .amt-btn .k{display:block;color:rgba(0,255,65,0.7);font-weight:600;font-size:14px}
-
-    .amt-btn.red{background:linear-gradient(180deg, rgba(224,59,59,0.16), rgba(224,59,59,0.06));border:1px solid rgba(224,59,59,0.22);color:#ff6b6b}
-    .amt-btn.red .k{color:rgba(255,107,107,0.7)}
-    .amt-btn.red.active{border-color:#ffb3b3;box-shadow:0 0 0 1px #ffb3b355,0 6px 22px rgba(224,59,59,0.35) inset;transform:translateY(-2px);}
-
-    .controls{display:flex;gap:8px;margin-top:16px}
-    .btn{
-      padding:12px 18px;border-radius:10px;background:linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.015));border:1px solid rgba(255,255,255,0.1);cursor:pointer;font-weight:600;font-size:14px;color:#eef2f5;min-width:120px;
-      transition:background .15s ease, transform .12s ease, box-shadow .15s ease;
+    .hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 28px; gap: 16px; flex-wrap: wrap;
     }
-    .btn:hover{background:linear-gradient(180deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,0.6);}
-    .btn.warn{border-color:rgba(224,59,59,0.7);background:linear-gradient(180deg, rgba(224,59,59,0.45), rgba(224,59,59,0.25));color:#fff;}
-    .btn.ghost{background:transparent;border:1px dashed rgba(255,255,255,0.2);color:var(--muted)}
-
-    .total-panel{font-size:16px;padding:22px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.015));border:1px solid rgba(255,255,255,0.03)}
-    .total-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    .total-amount{font-size:26px;font-weight:800;color:var(--money-light)}
-
-    /* right column */
-    .right{position:relative}
-    .history{max-height:520px;overflow:auto;padding:10px;border-radius:8px;background:var(--glass-2);border:1px solid rgba(255,255,255,0.02)}
-    .history-item{display:flex;justify-content:space-between;align-items:center;padding:8px;border-radius:8px;margin-bottom:8px}
-    .history-item .label{font-weight:700}
-    .small{font-size:14px;color:var(--muted)}
-
-    .calc-area{margin-top:18px;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);border:1px solid rgba(255,255,255,0.03)}
-
-    .result{display:flex;flex-direction:column;gap:8px}
-    .result .row{display:flex;justify-content:space-between;align-items:center}
-    .result .left{color:var(--muted)}
-    .result .right{font-weight:800;color:var(--money-light)}
-    .result .right.tax{color:var(--accent-2)}
-    .result .right.net{color:var(--money-light)}
-
-    .hidden{display:none}
-
-    .lang-select{
-      background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(0,0,0,0.4));
-      color:#00ff41;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,0.6);
-      padding:6px 18px;
-      min-width:130px;
-      box-shadow:0 0 0 1px rgba(255,255,255,0.15);
+    .hdr-title { display: flex; align-items: center; gap: 14px; }
+    .skull-icon { font-size: 36px; filter: drop-shadow(0 0 10px var(--gold)); }
+    .title-main {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 30px; font-weight: 700; letter-spacing: 0.1em;
+      color: var(--gold-bright);
+      text-shadow: 0 0 24px rgba(255,180,50,0.6), 0 0 60px rgba(255,180,50,0.2);
+      line-height: 1;
     }
-    .lang-select option{
-      background:#ffffff;
-      color:#000000;
+    .title-sub {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px; letter-spacing: 0.18em;
+      color: var(--muted); margin-top: 3px;
     }
-
-    .amt-btn.ps-btn{
-      min-width:100px;
-      padding:18px 16px;
+    .lang-wrap { display: flex; align-items: center; gap: 10px; }
+    .lang-label { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+    .lang-select {
+      background: var(--panel2); color: var(--gold);
+      border: 1px solid var(--border-bright); border-radius: 6px;
+      padding: 6px 14px; font-family: 'Exo 2', sans-serif;
+      font-size: 13px; font-weight: 600; cursor: pointer; outline: none;
     }
-    footer{margin-top:18px;color:var(--muted);font-size:15px;text-align:center}
-
-    @media (max-width:880px){.container{grid-template-columns:1fr;}}
+    .lang-select option { background: #1a2233; color: var(--text); }
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 860px) { .main-grid { grid-template-columns: 1fr; } }
+    .panel {
+      background: linear-gradient(160deg, var(--panel2) 0%, var(--panel) 100%);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px 22px 18px;
+      position: relative;
+      overflow: hidden;
+    }
+    .panel::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+    }
+    .panel-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 15px; font-weight: 700; letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold); margin-bottom: 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .panel-title .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--gold); box-shadow: var(--glow-gold);
+      flex-shrink: 0;
+    }
+    .panel-title .dot.red { background: var(--red); box-shadow: var(--glow-red); }
+    .panel-title .dot.green { background: var(--green); box-shadow: var(--glow-green); }
+    .hunter-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+    .hunter-btn {
+      background: linear-gradient(180deg, rgba(0,232,122,0.1), rgba(0,232,122,0.04));
+      border: 1px solid rgba(0,232,122,0.22);
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-family: 'Exo 2', sans-serif;
+      font-size: 14px; font-weight: 700;
+      color: var(--green);
+      cursor: pointer;
+      transition: all .15s ease;
+      position: relative; overflow: hidden;
+      display: flex; flex-direction: column; align-items: center; gap: 2px;
+      min-width: 110px;
+    }
+    .hunter-btn:hover {
+      border-color: var(--green);
+      box-shadow: 0 0 14px rgba(0,232,122,0.2);
+      transform: translateY(-2px);
+    }
+    .hunter-btn.active {
+      border-color: var(--green);
+      background: linear-gradient(180deg, rgba(0,232,122,0.22), rgba(0,232,122,0.08));
+      box-shadow: 0 0 20px rgba(0,232,122,0.3);
+    }
+    .hunter-btn .h-price {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px; color: rgba(0,232,122,0.6);
+    }
+    .hunter-btn .h-count {
+      position: absolute; top: 4px; right: 6px;
+      font-size: 10px; font-weight: 700;
+      color: var(--gold); font-family: 'Share Tech Mono', monospace;
+    }
+    .hunter-btn .h-count:empty { display: none; }
+    .add-hunter-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+    .gh-input {
+      flex: 1; min-width: 100px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-family: 'Exo 2', sans-serif;
+      font-size: 13px; color: var(--text);
+      outline: none;
+      transition: border-color .15s;
+    }
+    .gh-input:focus { border-color: var(--gold-dim); }
+    .gh-input::placeholder { color: var(--muted); }
+    .gh-input.price { max-width: 120px; }
+    .add-btn {
+      background: linear-gradient(180deg, rgba(255,180,50,0.2), rgba(255,180,50,0.08));
+      border: 1px solid var(--border-bright);
+      border-radius: 6px;
+      padding: 8px 14px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 14px; font-weight: 700; letter-spacing: 0.05em;
+      color: var(--gold); cursor: pointer;
+      transition: all .15s;
+    }
+    .add-btn:hover { background: rgba(255,180,50,0.25); box-shadow: var(--glow-gold); }
+    .bonus-sections { display: flex; flex-direction: column; gap: 14px; }
+    .bonus-sec-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px; letter-spacing: 0.15em;
+      color: var(--cyan); margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    .bonus-checks { display: flex; flex-wrap: wrap; gap: 6px; }
+    .cb-label {
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 6px;
+      padding: 7px 12px;
+      cursor: pointer;
+      font-size: 13px; font-weight: 600;
+      transition: all .15s;
+      user-select: none;
+    }
+    .cb-label:hover { border-color: rgba(255,180,50,0.3); }
+    .cb-label input[type=checkbox] { accent-color: var(--gold); width: 14px; height: 14px; cursor: pointer; }
+    .cb-label.checked {
+      border-color: var(--gold-dim);
+      background: rgba(255,180,50,0.1);
+      color: var(--gold-bright);
+    }
+    .cb-val { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--gold-dim); }
+    .clan-rows { display: flex; flex-direction: column; gap: 8px; }
+    .clan-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .clan-btn {
+      background: linear-gradient(180deg, rgba(255,60,60,0.12), rgba(255,60,60,0.04));
+      border: 1px solid rgba(255,60,60,0.22);
+      border-radius: 8px;
+      padding: 9px 14px;
+      font-family: 'Exo 2', sans-serif;
+      font-size: 13px; font-weight: 700;
+      color: var(--red); cursor: pointer;
+      transition: all .15s;
+      min-width: 130px;
+    }
+    .clan-btn:hover { border-color: var(--red); box-shadow: var(--glow-red); }
+    .clan-btn.active { border-color: var(--red); background: rgba(255,60,60,0.18); }
+    .ps-btn {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 7px;
+      padding: 8px 12px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px; color: var(--text);
+      cursor: pointer; transition: all .15s;
+    }
+    .ps-btn:hover { border-color: var(--red); color: var(--red); }
+    .ps-btn.active { border-color: var(--red); color: var(--red); background: rgba(255,60,60,0.1); box-shadow: var(--glow-red); }
+    .summary-panel { grid-column: span 2; }
+    @media (max-width: 860px) { .summary-panel { grid-column: span 1; } }
+    .summary-list {
+      min-height: 80px; max-height: 360px;
+      overflow-y: auto;
+      padding: 12px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    .summary-list::-webkit-scrollbar { width: 4px; }
+    .summary-list::-webkit-scrollbar-track { background: transparent; }
+    .summary-list::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
+    .sum-empty {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px; color: var(--muted);
+      text-align: center; padding: 20px 0;
+    }
+    .sum-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 6px 8px; border-radius: 6px;
+      margin-bottom: 4px;
+      border: 1px solid transparent;
+      transition: background .1s;
+      gap: 8px;
+    }
+    .sum-item:hover { background: rgba(255,255,255,0.03); }
+    .sum-item .si-left { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+    .sum-item .si-name { font-weight: 600; font-size: 14px; color: var(--text-bright); }
+    .sum-item .si-detail { font-family: 'Share Tech Mono', monospace; font-size: 11px; color: var(--muted); }
+    .sum-item .si-val { font-family: 'Share Tech Mono', monospace; font-size: 14px; font-weight: 700; color: var(--green); flex-shrink: 0; }
+    .sum-item.clan .si-val { color: var(--red); }
+    .totals-row {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px; margin-bottom: 16px;
+    }
+    .total-box {
+      background: rgba(0,0,0,0.35);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+    .total-box .tb-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; letter-spacing: 0.12em;
+      color: var(--muted); text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .total-box .tb-val { font-family: 'Share Tech Mono', monospace; font-size: 20px; font-weight: 700; }
+    .total-box.box-total .tb-val { color: var(--gold-bright); text-shadow: 0 0 14px rgba(255,208,96,0.5); }
+    .total-box.box-tax .tb-val { color: var(--red); }
+    .total-box.box-net .tb-val { color: var(--green); text-shadow: 0 0 14px rgba(0,232,122,0.4); }
+    .example-box {
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(0,212,255,0.18);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+    }
+    .example-box .ex-title {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; letter-spacing: 0.14em;
+      color: var(--cyan); text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .example-text {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px; line-height: 1.7;
+      color: rgba(212,221,232,0.85);
+      white-space: pre-wrap; word-break: break-word;
+    }
+    .example-text .hi-name { color: var(--green); }
+    .example-text .hi-clan { color: var(--red); }
+    .example-text .hi-total { color: var(--gold-bright); font-weight: 700; }
+    .action-row {
+      display: flex; justify-content: space-between; align-items: center;
+      gap: 10px; flex-wrap: wrap;
+    }
+    .act-btn {
+      padding: 11px 20px;
+      border-radius: 8px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 15px; font-weight: 700; letter-spacing: 0.08em;
+      cursor: pointer; border: 1px solid; transition: all .15s;
+    }
+    .act-btn.undo { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.12); color: var(--text); }
+    .act-btn.undo:hover { background: rgba(255,255,255,0.1); }
+    .act-btn.clear { background: transparent; border-color: rgba(255,60,60,0.3); color: var(--red); }
+    .act-btn.clear:hover { background: rgba(255,60,60,0.1); }
+    .act-btn.copy {
+      background: linear-gradient(135deg, #c87d10, #ffb432);
+      border-color: var(--gold); color: #000;
+      box-shadow: 0 4px 18px rgba(255,180,50,0.3);
+      min-width: 160px;
+    }
+    .act-btn.copy:hover { box-shadow: 0 4px 28px rgba(255,180,50,0.5); transform: translateY(-1px); }
+    @keyframes flash-gold { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 30px rgba(255,180,50,0.6)} }
+    .flash { animation: flash-gold .4s ease; }
+    .toast {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--gold); color: #000;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 15px; font-weight: 700; letter-spacing: 0.05em;
+      padding: 12px 28px; border-radius: 40px;
+      opacity: 0; pointer-events: none;
+      transition: all .3s ease; z-index: 1000;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .remove-btn {
+      background: transparent; border: none;
+      color: var(--muted); font-size: 12px; cursor: pointer;
+      margin-left: 2px; line-height: 1;
+      transition: color .1s;
+    }
+    .remove-btn:hover { color: var(--red); }
+    .sec-div { height: 1px; background: var(--border); margin: 14px 0; }
+    .bonus-tags {
+      display: flex; flex-wrap: wrap; gap: 3px;
+    }
+    .bonus-tag {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; padding: 1px 5px;
+      background: rgba(255,180,50,0.12);
+      border: 1px solid rgba(255,180,50,0.3);
+      border-radius: 3px; color: var(--gold-dim);
+    }
+    /* Delete row button in summary */
+    .del-entry-btn {
+      background: transparent; border: none;
+      color: var(--muted); font-size: 14px; cursor: pointer;
+      padding: 2px 5px; border-radius: 4px;
+      transition: color .1s, background .1s;
+      flex-shrink: 0;
+    }
+    .del-entry-btn:hover { color: var(--red); background: rgba(255,60,60,0.1); }
   </style>
 </head>
 <body>
-  <div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:16px">
-    <label for="langSelect" class="small" style="margin-right:8px;font-weight:600;letter-spacing:0.03em;">Language</label>
-    <select id="langSelect" class="small lang-select">
-      <option value="en">English</option>
-      <option value="th">ไทย</option>
-    </select>
+<div class="wrap">
+  <div class="hdr">
+    <div class="hdr-title">
+      <span class="skull-icon">💀</span>
+      <div>
+        <div class="title-main" id="titleText">BOUNTY BOARD IM023</div>
+        <div class="title-sub" id="titleSub">WANTED · DEAD OR ALIVE · TAX 30%</div>
+      </div>
+    </div>
+    <div class="lang-wrap">
+      <span class="lang-label">Lang</span>
+      <select id="langSelect" class="lang-select">
+        <option value="en">English</option>
+        <option value="th">ไทย</option>
+      </select>
+    </div>
   </div>
 
-  <div class="container">
-    <div class="card">
-      <h1 id="titleText">Bounty Board IM023</h1>
-      <p class="lead" id="leadText">Click a hunter name to add 1,000,000 bounty. Choose clan + PS to add DS bounty.</p>
-
-      <div style="margin-top:12px;margin-bottom:18px">
-        <div class="small" id="hintText">Click name once = 1M, click again for x2, x3 ... Use clan + PS buttons to add DS.</div>
+  <div class="main-grid">
+    <!-- LEFT: Hunter names -->
+    <div class="panel">
+      <div class="panel-title"><span class="dot green"></span><span id="hunterHeader">HUNTER TARGETS</span></div>
+      <div class="hunter-grid" id="hunterGrid"></div>
+      <div class="sec-div"></div>
+      <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:8px;" id="addHunterLabel">ADD CUSTOM TARGET</div>
+      <div class="add-hunter-row">
+        <input class="gh-input" id="newHunterName" placeholder="Name" />
+        <input class="gh-input price" id="newHunterPrice" placeholder="Price (M)" type="number" min="0.5" step="0.5" />
+        <button class="add-btn" id="addHunterBtn">＋ ADD</button>
       </div>
+    </div>
 
-      <div style="display:flex;gap:24px;flex-wrap:wrap">
-        <div style="flex:1;min-width:260px">
-          <div class="small" style="margin-bottom:8px" id="hunterHeader">Hunter names</div>
-          <div class="buttons" role="group" aria-label="Hunter names">
-            <button class="amt-btn person-btn" data-person="xBenedettta">xBenedettta</button>
-            <button class="amt-btn person-btn" data-person="Sweet potato">Sweet potato</button>
-            <button class="amt-btn person-btn" data-person="忠Gen">忠Gen</button>
-            <button class="amt-btn person-btn" data-person="Estelle Rae">Estelle Rae</button>
-            <button class="amt-btn person-btn" data-person="SHyeSun">SHyeSun</button>
-            <button class="amt-btn person-btn" data-person="ATOWN01">ATOWN01</button>
-            <button class="amt-btn person-btn" data-person="Nneon024">Nneon024</button>
+    <!-- RIGHT: Bonus checkboxes -->
+    <div class="panel">
+      <div class="panel-title"><span class="dot"></span><span id="bonusHeader">BONUS MODIFIERS</span></div>
+      <div class="bonus-sections" id="bonusSections">
+        <div class="bonus-section">
+          <div class="bonus-sec-title">SP</div>
+          <div class="bonus-checks">
+            <label class="cb-label" id="cb-RB-label">
+              <input type="checkbox" id="cb-RB" data-val="3000000" data-label="[RB]" />
+              <span>[RB]</span><span class="cb-val">+3M</span>
+            </label>
+            <label class="cb-label" id="cb-YB-label">
+              <input type="checkbox" id="cb-YB" data-val="2000000" data-label="[YB]" />
+              <span>[YB]</span><span class="cb-val">+2M</span>
+            </label>
+            <label class="cb-label" id="cb-GB-label">
+              <input type="checkbox" id="cb-GB" data-val="2000000" data-label="[GB]" />
+              <span>[GB]</span><span class="cb-val">+2M</span>
+            </label>
           </div>
         </div>
-
-        <div style="flex:1;min-width:260px">
-          <div class="calc-area">
-              <div class="small" style="margin-bottom:8px" id="clanHeader">Select clan + PS</div>
-              <div class="buttons" role="group" aria-label="Clans and PS" style="flex-direction:column">
-                <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-                  <button class="amt-btn red family-btn" data-family="Usdt丶Stellar">Usdt丶Stellar</button>
-                  <button class="amt-btn ps-btn" data-ps="250000">250k</button>
-                  <button class="amt-btn ps-btn" data-ps="280000">280k</button>
-                  <button class="amt-btn ps-btn" data-ps="300000">300k+</button>
-                </div>
-                <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-                  <button class="amt-btn red family-btn" data-family="Pïmlückぷ">Pïmlückぷ</button>
-                  <button class="amt-btn ps-btn" data-ps="250000">250k</button>
-                  <button class="amt-btn ps-btn" data-ps="280000">280k</button>
-                  <button class="amt-btn ps-btn" data-ps="300000">300k+</button>
-                </div>
-                <div style="display:flex;gap:8px;align-items:center">
-                  <button class="amt-btn red family-btn" data-family="Usdt丶Syahdu">Usdt丶Syahdu</button>
-                  <button class="amt-btn ps-btn" data-ps="250000">250k</button>
-                  <button class="amt-btn ps-btn" data-ps="280000">280k</button>
-                  <button class="amt-btn ps-btn" data-ps="300000">300k+</button>
-                </div>
-              </div>
-            </div>
+        <div class="bonus-section">
+          <div class="bonus-sec-title">MS</div>
+          <div class="bonus-checks">
+            <label class="cb-label" id="cb-LC12-label">
+              <input type="checkbox" id="cb-LC12" data-val="2000000" data-label="[LC 1-2]" />
+              <span>[LC 1-2]</span><span class="cb-val">+2M</span>
+            </label>
+            <label class="cb-label" id="cb-LC3-label">
+              <input type="checkbox" id="cb-LC3" data-val="3000000" data-label="[LC3]" />
+              <span>[LC3]</span><span class="cb-val">+3M</span>
+            </label>
+          </div>
+        </div>
+        <div class="bonus-section">
+          <div class="bonus-sec-title">WB</div>
+          <div class="bonus-checks">
+            <label class="cb-label" id="cb-WB-label">
+              <input type="checkbox" id="cb-WB" data-val="3000000" data-label="[WB]" />
+              <span>[WB]</span><span class="cb-val">+3M</span>
+            </label>
+            <label class="cb-label" id="cb-PGT-label">
+              <input type="checkbox" id="cb-PGT" data-val="3000000" data-label="[PGT]" />
+              <span>[PGT]</span><span class="cb-val">+3M</span>
+            </label>
+          </div>
         </div>
       </div>
 
-      <footer style="margin-top:16px" id="footerText"></footer>
+      <div class="sec-div"></div>
+      <div class="panel-title" style="margin-bottom:12px;"><span class="dot red"></span><span id="clanHeader">DS BY CLAN</span></div>
+      <div class="clan-rows" id="clanRows">
+        <div class="clan-row">
+          <button class="clan-btn" data-family="Usdt丶Stellar">Usdt丶Stellar</button>
+          <button class="ps-btn" data-ps="250000" data-family="Usdt丶Stellar">250k</button>
+          <button class="ps-btn" data-ps="280000" data-family="Usdt丶Stellar">280k</button>
+          <button class="ps-btn" data-ps="300000" data-family="Usdt丶Stellar">300k+</button>
+        </div>
+        <div class="clan-row">
+          <button class="clan-btn" data-family="Pïmlückぷ">Pïmlückぷ</button>
+          <button class="ps-btn" data-ps="250000" data-family="Pïmlückぷ">250k</button>
+          <button class="ps-btn" data-ps="280000" data-family="Pïmlückぷ">280k</button>
+          <button class="ps-btn" data-ps="300000" data-family="Pïmlückぷ">300k+</button>
+        </div>
+        <div class="clan-row">
+          <button class="clan-btn" data-family="Usdt丶Syahdu">Usdt丶Syahdu</button>
+          <button class="ps-btn" data-ps="250000" data-family="Usdt丶Syahdu">250k</button>
+          <button class="ps-btn" data-ps="280000" data-family="Usdt丶Syahdu">280k</button>
+          <button class="ps-btn" data-ps="300000" data-family="Usdt丶Syahdu">300k+</button>
+        </div>
+      </div>
     </div>
 
-    <div class="card">
-      <h2 style="margin-top:0;font-size:24px" id="summaryTitle">Bounty summary</h2>
-      <div class="history" style="max-height:none" id="summaryBox">
-        <div class="small" id="summaryHint">Click a name or choose clan + PS to add bounty, then use the button below to copy the summary.</div>
+    <!-- BOTTOM: Summary -->
+    <div class="panel summary-panel">
+      <div class="panel-title"><span class="dot"></span><span id="summaryTitle">BOUNTY SUMMARY</span></div>
+      <div class="summary-list" id="summaryList">
+        <div class="sum-empty" id="sumEmpty">— No targets recorded —</div>
       </div>
-
-      <div class="calc-area" style="margin-top:14px">
-        <div class="result">
-          <div class="row"><div class="left" id="labelTotal">Total bounty</div><div class="right" id="sumAll">0</div></div>
-          <div class="row"><div class="left" id="labelTax">Tax 30%</div><div class="right tax" id="tax30">0</div></div>
-          <div class="row"><div class="left" id="labelAfterTax">After tax</div><div class="right net" id="netRemain">0</div></div>
+      <div class="totals-row">
+        <div class="total-box box-total">
+          <div class="tb-label" id="labelTotal">TOTAL BOUNTY</div>
+          <div class="tb-val" id="sumAll">0</div>
         </div>
-        <div class="small" style="margin-top:8px" id="sumAllShort">total = 0M</div>
+        <div class="total-box box-tax">
+          <div class="tb-label" id="labelTax">TAX 30%</div>
+          <div class="tb-val" id="tax30">0</div>
+        </div>
+        <div class="total-box box-net">
+          <div class="tb-label" id="labelNet">AFTER TAX</div>
+          <div class="tb-val" id="netRemain">0</div>
+        </div>
       </div>
-
-      <div class="controls" style="margin-top:12px;justify-content:space-between;gap:8px">
-        <button class="btn" id="undoEntryBtn">Undo</button>
+      <div class="example-box" id="exampleBox" style="display:none">
+        <div class="ex-title" id="exTitle">📋 COPY PREVIEW</div>
+        <div class="example-text" id="exampleText"></div>
+      </div>
+      <div class="action-row">
+        <button class="act-btn undo" id="undoBtn">↩ <span id="undoLabel">UNDO</span></button>
         <div style="display:flex;gap:8px">
-          <button class="btn ghost" id="clearEntriesBtn">Clear all</button>
-          <button class="btn warn" id="copySummaryBtn">Copy summary</button>
+          <button class="act-btn clear" id="clearBtn"><span id="clearLabel">CLEAR ALL</span></button>
+          <button class="act-btn copy" id="copyBtn">📋 <span id="copyLabel">COPY SUMMARY</span></button>
         </div>
       </div>
     </div>
   </div>
+</div>
 
-  <script>
-    (function(){
-      const BASE_BOUNTY = 1000000;
-      
-      const personBounties = {
-        'xBenedettta': 2000000,
-        'Sweet potato': 2000000,
-        '忠Gen': 2000000,
-        'Estelle Rae': 2000000,
-        'SHyeSun': 1000000,
-        'ATOWN01': 1000000,
-        'Nneon024': 1000000
-      };
+<div class="toast" id="toast"></div>
 
-      const personButtons = document.querySelectorAll('.person-btn');
-      const familyButtons = document.querySelectorAll('.family-btn');
-      const psButtons = document.querySelectorAll('[data-ps]');
+<script>
+(function(){
 
-      const summaryBox = document.getElementById('summaryBox');
-      const undoEntryBtn = document.getElementById('undoEntryBtn');
-      const clearEntriesBtn = document.getElementById('clearEntriesBtn');
-      const copySummaryBtn = document.getElementById('copySummaryBtn');
+  const STORAGE_KEY = 'bountyBoard_customHunters';
 
-      const sumAllEl = document.getElementById('sumAll');
-      const tax30El = document.getElementById('tax30');
-      const netRemainEl = document.getElementById('netRemain');
-      const sumAllShortEl = document.getElementById('sumAllShort');
+  const DEFAULT_HUNTERS = [
+    { name: 'xBenedettta',  price: 2000000, editable: false },
+    { name: 'Sweet potato', price: 2000000, editable: false },
+    { name: '忠Gen',         price: 2000000, editable: false },
+    { name: 'Estelle Rae',  price: 2000000, editable: false },
+    { name: 'SHyeSun',      price: 1000000, editable: false },
+    { name: 'ATOWN01',      price: 1000000, editable: false },
+    { name: 'Nneon024',     price: 1000000, editable: false },
+  ];
 
-      const langSelect = document.getElementById('langSelect');
-      const titleText = document.getElementById('titleText');
-      const leadText = document.getElementById('leadText');
-      const hintText = document.getElementById('hintText');
-      const hunterHeader = document.getElementById('hunterHeader');
-      const clanHeader = document.getElementById('clanHeader');
-      const psHeader = document.getElementById('psHeader');
-      const footerText = document.getElementById('footerText');
-      const summaryTitle = document.getElementById('summaryTitle');
-      const summaryHint = document.getElementById('summaryHint');
-      const labelTotal = document.getElementById('labelTotal');
-      const labelTax = document.getElementById('labelTax');
-      const labelAfterTax = document.getElementById('labelAfterTax');
+  const psToDs = { 250000: 100000, 280000: 200000, 300000: 500000 };
+  const BONUS_IDS = ['cb-RB','cb-YB','cb-GB','cb-LC12','cb-LC3','cb-WB','cb-PGT'];
 
-      let currentPerson = null;
-      let currentFamily = null;
-      let currentPs = null;
+  function loadCustomHunters() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return [];
+      return JSON.parse(raw).map(h => ({ ...h, editable: true }));
+    } catch(e) { return []; }
+  }
 
-      let entries = []; // เก็บรายการค่าหัวจากการคลิกปุ่มต่าง ๆ
-      let historyStack = []; // เก็บประวัติการเพิ่มค่าหัวครั้งล่าสุด สำหรับปุ่มย้อนกลับ
+  function saveCustomHunters() {
+    try {
+      const custom = hunters.filter(h => h.editable);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(custom));
+    } catch(e) {}
+  }
 
-      let currentLang = 'en';
+  let hunters = [
+    ...DEFAULT_HUNTERS.map(h => ({...h})),
+    ...loadCustomHunters()
+  ];
 
-      const texts = {
-        en: {
-          title:'Bounty Board IM023',
-          lead:'Click a hunter name to add 1,000,000 bounty. Choose clan + PS to add DS bounty.',
-          hint:'1 click = x1, 2 clicks = x2, 3 clicks = x3, ... on the same name or PS. Click PS buttons directly to add DS.',
-          hunterHeader:'Hunter names',
-          clanHeader:'DS by clan',
-          psHeader:'Select PS (defines DS you receive)',
-          footer:'',
-          summaryTitle:'Bounty summary',
-          summaryHint:'Click a name or choose clan + PS to add bounty, then use the button below to copy the summary.',
-          totalLabel:'Total bounty',
-          taxLabel:'Tax 30%',
-          afterTaxLabel:'After tax',
-          undo:'Undo',
-          clear:'Clear all',
-          copy:'Copy summary',
-          summaryEmpty:'Click a name or choose clan + PS to add bounty, then use the button below to copy the summary.',
-          alertSelectClan:'Please select a clan for this PS before adding bounty.',
-          confirmClear:'Clear all bounty entries?',
-          alertNoEntry:'There is no bounty entry to copy yet.',
-          alertCopied:'Summary copied to clipboard.',
-          promptCopy:'Copy this summary (Ctrl+C then Enter):'
-        },
-        th: {
-          title:'เว็บล่าค่าหัว',
-          lead:'คลิกชื่อเพื่อเพิ่มค่าหัว 1,000,000 และเลือกตระกูล + พลัง PS เพื่อเพิ่ม DS',
-          hint:'1 คลิก = x1, 2 คลิก = x2, 3 คลิก = x3 ... สำหรับชื่อหรือ PS เดิม คลิกปุ่ม PS โดยตรงเพื่อเพิ่ม DS',
-          hunterHeader:'รายชื่อผู้ถูกตั้งค่าหัว',
-          clanHeader:'DS ตามตระกูล',
-          psHeader:'เลือกพลัง PS (กำหนด DS ที่ได้รับ)',
-          footer:'',
-          summaryTitle:'สรุปค่าหัว',
-          summaryHint:'คลิกชื่อ หรือเลือกตระกูล + พลัง PS เพื่อเพิ่มค่าหัว แล้วใช้ปุ่มด้านล่างคัดลอกข้อความ',
-          totalLabel:'รวมทั้งหมด',
-          taxLabel:'ภาษี 30%',
-          afterTaxLabel:'เหลือหลังหักภาษี',
-          undo:'ย้อนกลับ',
-          clear:'ล้างรายการทั้งหมด',
-          copy:'คัดลอกข้อความสรุป',
-          summaryEmpty:'คลิกชื่อ หรือเลือกตระกูล + พลัง PS เพื่อเพิ่มค่าหัว แล้วใช้ปุ่มด้านล่างคัดลอกข้อความ',
-          alertSelectClan:'โปรดเลือกตระกูลสำหรับพลัง PS ก่อนเพิ่มค่าหัว',
-          confirmClear:'ล้างรายการค่าหัวทั้งหมด?',
-          alertNoEntry:'ยังไม่มีรายการค่าหัวให้คัดลอก',
-          alertCopied:'คัดลอกข้อความสรุปเรียบร้อย',
-          promptCopy:'คัดลอกข้อความสรุป (Ctrl+C แล้วกด Enter):'
-        }
-      };
+  let entries = [];
+  let history = [];
+  let nextId = 1;
 
-      const psToDs = {
-        250000: 100000,
-        280000: 200000,
-        300000: 500000
-      };
+  function newId() { return nextId++; }
 
-      function formatNumber(n){
-        return new Intl.NumberFormat('th-TH').format(n);
+  /* ─── ACTIVE BONUSES SNAPSHOT ─── */
+  function getActiveBonuses() {
+    return BONUS_IDS
+      .filter(id => {
+        const cb = document.getElementById(id);
+        return cb && cb.checked;
+      })
+      .map(id => {
+        const cb = document.getElementById(id);
+        return { key: id, label: cb.dataset.label, val: parseInt(cb.dataset.val) };
+      });
+  }
+
+  /* ─── TEXTS ─── */
+  const T = {
+    en: {
+      titleSub: 'WANTED · DEAD OR ALIVE · TAX 30%',
+      hunterHeader: 'HUNTER TARGETS',
+      bonusHeader: 'BONUS MODIFIERS',
+      clanHeader: 'DS BY CLAN',
+      summaryTitle: 'BOUNTY SUMMARY',
+      labelTotal: 'TOTAL BOUNTY',
+      labelTax: 'TAX 30%',
+      labelNet: 'AFTER TAX',
+      undoLabel: 'UNDO',
+      clearLabel: 'CLEAR ALL',
+      copyLabel: 'COPY SUMMARY',
+      addHunterLabel: 'ADD CUSTOM TARGET',
+      exTitle: '📋 COPY PREVIEW',
+      sumEmpty: '— No targets recorded —',
+      namePH: 'Name',
+      pricePH: 'Price (M)',
+      addBtn: '＋ ADD',
+      toastCopied: '✓ Copied to clipboard',
+      toastNoEntry: 'No entries to copy',
+      confirmClear: 'Clear all bounty entries?',
+      totalShort: 'total',
+    },
+    th: {
+      titleSub: 'ตั้งค่าหัว · หักภาษี 30%',
+      hunterHeader: 'เป้าหมาย',
+      bonusHeader: 'โบนัสเพิ่มเติม',
+      clanHeader: 'DS ตามตระกูล',
+      summaryTitle: 'สรุปค่าหัว',
+      labelTotal: 'รวมทั้งหมด',
+      labelTax: 'ภาษี 30%',
+      labelNet: 'เหลือหลังหักภาษี',
+      undoLabel: 'ย้อนกลับ',
+      clearLabel: 'ล้างทั้งหมด',
+      copyLabel: 'คัดลอก',
+      addHunterLabel: 'เพิ่มเป้าหมายใหม่',
+      exTitle: '📋 ตัวอย่างข้อความที่จะคัดลอก',
+      sumEmpty: '— ยังไม่มีรายการ —',
+      namePH: 'ชื่อ',
+      pricePH: 'ราคา (M)',
+      addBtn: '＋ เพิ่ม',
+      toastCopied: '✓ คัดลอกแล้ว',
+      toastNoEntry: 'ยังไม่มีรายการ',
+      confirmClear: 'ล้างรายการทั้งหมด?',
+      totalShort: 'รวม',
+    }
+  };
+
+  let lang = 'en';
+  const t = () => T[lang];
+
+  /* ─── HELPERS ─── */
+  function fmt(n) { return new Intl.NumberFormat('en-US').format(n); }
+  function fmtShort(n) {
+    if(n >= 1e6){ const m = n/1e6; return (Number.isInteger(m)?m:m.toFixed(1).replace(/\.0$/,''))+'M'; }
+    if(n >= 1e3){ const k = n/1e3; return (Number.isInteger(k)?k:k.toFixed(1).replace(/\.0$/,''))+'K'; }
+    return String(n);
+  }
+
+  function showToast(msg){
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.classList.add('show');
+    setTimeout(()=>el.classList.remove('show'), 2000);
+  }
+
+  function entryValue(e) {
+    if(e.type === 'person') {
+      const bonusSum = (e.bonuses||[]).reduce((s,b)=>s+b.val, 0);
+      return e.unit + bonusSum;
+    }
+    return e.unit;
+  }
+
+  function bonusKey(bonuses) {
+    return (bonuses||[]).map(b=>b.key).sort().join(',');
+  }
+
+  function groupPersonEntries(personEntries) {
+    const map = new Map();
+    personEntries.forEach(e => {
+      const key = e.name + '|' + bonusKey(e.bonuses);
+      if(map.has(key)) {
+        map.get(key).count++;
+        map.get(key).ids.push(e.id);
+      } else {
+        map.set(key, { name: e.name, unit: e.unit, bonuses: e.bonuses, count: 1, ids: [e.id] });
       }
+    });
+    return Array.from(map.values());
+  }
 
-      function formatShort(n){
-        if(n >= 1000000){
-          const m = n / 1000000;
-          if(Number.isInteger(m)) return m + 'M';
-          return m.toFixed(1).replace(/\.0$/, '') + 'M';
-        }
-        if(n >= 1000){
-          const k = n / 1000;
-          if(Number.isInteger(k)) return k + 'K';
-          return k.toFixed(1).replace(/\.0$/, '') + 'K';
-        }
-        return String(n);
+  function groupPsEntries(psEntries) {
+    const map = new Map();
+    psEntries.forEach(e => {
+      const key = e.family + '|' + e.ps;
+      if(map.has(key)) {
+        map.get(key).count++;
+        map.get(key).ids.push(e.id);
+      } else {
+        map.set(key, { family: e.family, ps: e.ps, unit: e.unit, count: 1, ids: [e.id] });
       }
+    });
+    return Array.from(map.values());
+  }
 
-      function applyLanguage(lang){
-        currentLang = lang;
-        const t = texts[lang];
-        titleText.textContent = t.title;
-        leadText.textContent = t.lead;
-        hintText.textContent = t.hint;
-        hunterHeader.textContent = t.hunterHeader;
-        clanHeader.textContent = t.clanHeader;
-        psHeader.textContent = t.psHeader;
-        footerText.textContent = t.footer;
-        summaryTitle.textContent = t.summaryTitle;
-        labelTotal.textContent = t.totalLabel;
-        labelTax.textContent = t.taxLabel;
-        labelAfterTax.textContent = t.afterTaxLabel;
-        undoEntryBtn.textContent = t.undo;
-        clearEntriesBtn.textContent = t.clear;
-        copySummaryBtn.textContent = t.copy;
-        summaryHint.textContent = t.summaryHint;
+  /* ─── BUILD HUNTER GRID ─── */
+  function buildHunterGrid(){
+    const grid = document.getElementById('hunterGrid');
+    grid.innerHTML = '';
+    hunters.forEach(h => {
+      const count = entries.filter(e => e.type==='person' && e.name===h.name).length;
+
+      const btn = document.createElement('button');
+      btn.className = 'hunter-btn' + (count > 0 ? ' active' : '');
+      btn.dataset.name = h.name;
+
+      btn.innerHTML = `
+        <span class="h-count">${count > 0 ? 'x'+count : ''}</span>
+        <span>${h.name}${h.editable ? ` <button class="remove-btn" data-remove="${h.name}" title="Remove">✕</button>` : ''}</span>
+        <span class="h-price">${fmtShort(h.price)}/kill</span>
+      `;
+      grid.appendChild(btn);
+    });
+
+    grid.querySelectorAll('.hunter-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        if(e.target.classList.contains('remove-btn')) return;
+        const name = btn.dataset.name;
+        const hunter = hunters.find(h=>h.name===name);
+        if(!hunter) return;
+
+        const activeBonuses = getActiveBonuses();
+        const id = newId();
+        entries.push({ id, type:'person', name, unit: hunter.price, bonuses: activeBonuses });
+        history.push(id);
+
+        buildHunterGrid();
+        updateSummary();
+      });
+    });
+
+    grid.querySelectorAll('.remove-btn').forEach(rb => {
+      rb.addEventListener('click', e => {
+        e.stopPropagation();
+        const name = rb.dataset.remove;
+        hunters = hunters.filter(h=>h.name!==name);
+        entries = entries.filter(e=>!(e.type==='person'&&e.name===name));
+        history = history.filter(id => entries.find(e=>e.id===id));
+        saveCustomHunters();
+        buildHunterGrid();
+        updateSummary();
+      });
+    });
+  }
+
+  /* ─── ADD HUNTER ─── */
+  document.getElementById('addHunterBtn').addEventListener('click', addHunter);
+  document.getElementById('newHunterPrice').addEventListener('keydown', e=>{ if(e.key==='Enter') addHunter(); });
+
+  function addHunter(){
+    const nameEl = document.getElementById('newHunterName');
+    const priceEl = document.getElementById('newHunterPrice');
+    const name = nameEl.value.trim();
+    const priceM = parseFloat(priceEl.value);
+    if(!name) { nameEl.focus(); return; }
+    if(isNaN(priceM) || priceM <= 0) { priceEl.focus(); return; }
+    if(hunters.find(h=>h.name===name)) { nameEl.select(); return; }
+    hunters.push({ name, price: Math.round(priceM * 1e6), editable: true });
+    saveCustomHunters();
+    nameEl.value = '';
+    priceEl.value = '';
+    buildHunterGrid();
+  }
+
+  /* ─── CHECKBOXES ─── */
+  BONUS_IDS.forEach(id => {
+    const cb = document.getElementById(id);
+    const lbl = document.getElementById(id+'-label');
+    cb.addEventListener('change', () => {
+      if(cb.checked) lbl.classList.add('checked');
+      else lbl.classList.remove('checked');
+    });
+  });
+
+  /* ─── CLAN / PS BUTTONS ─── */
+  document.querySelectorAll('.ps-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const ps = parseInt(btn.dataset.ps);
+      const family = btn.dataset.family;
+      const ds = psToDs[ps] || 0;
+
+      btn.closest('.clan-row').querySelectorAll('.ps-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const id = newId();
+      entries.push({ id, type:'ps', family, ps, unit: ds });
+      history.push(id);
+
+      updateSummary();
+    });
+  });
+
+  /* ─── UNDO ─── */
+  document.getElementById('undoBtn').addEventListener('click', () => {
+    if(!history.length) return;
+    const lastId = history.pop();
+    entries = entries.filter(e => e.id !== lastId);
+    buildHunterGrid();
+    updateSummary();
+  });
+
+  /* ─── CLEAR ─── */
+  document.getElementById('clearBtn').addEventListener('click', () => {
+    if(!entries.length) return;
+    if(!confirm(t().confirmClear)) return;
+    entries = [];
+    history = [];
+    BONUS_IDS.forEach(id=>{
+      document.getElementById(id).checked = false;
+      document.getElementById(id+'-label').classList.remove('checked');
+    });
+    document.querySelectorAll('.ps-btn').forEach(b=>b.classList.remove('active'));
+    buildHunterGrid();
+    updateSummary();
+  });
+
+  /* ─── COPY TEXT BUILDER ─── */
+  function buildCopyText(){
+    let lines = [];
+    let total = 0;
+
+    const personGroups = groupPersonEntries(entries.filter(e=>e.type==='person'));
+    const psGroups = groupPsEntries(entries.filter(e=>e.type==='ps'));
+
+    personGroups.forEach(g => {
+      const bonusSum = (g.bonuses||[]).reduce((s,b)=>s+b.val, 0);
+      const perKill = g.unit + bonusSum;
+      const v = perKill * g.count;
+      total += v;
+
+      const bonusPart = (g.bonuses||[]).length > 0
+        ? (g.bonuses.map(b=>b.label).join('') + ' ')
+        : '';
+
+      // ── แสดงแค่ชื่อ + จำนวน + ยอดรวม ไม่มี breakdown ──
+      lines.push(`${bonusPart}${g.name} x${g.count} = ${fmtShort(v)}`);
+    });
+
+    psGroups.forEach(g => {
+      const v = g.unit * g.count; total += v;
+      lines.push(`[PS:${g.ps/1000}k] ${g.family} x${g.count} = ${fmtShort(v)}`);
+    });
+
+    lines.push('');
+    lines.push(`${t().totalShort} = ${fmtShort(total)}`);
+    return lines.join('\n');
+  }
+
+  /* ─── COPY BUTTON ─── */
+  document.getElementById('copyBtn').addEventListener('click', async () => {
+    if(!entries.length){ showToast(t().toastNoEntry); return; }
+    const text = buildCopyText();
+    try { await navigator.clipboard.writeText(text); }
+    catch(e){ prompt('', text); }
+    showToast(t().toastCopied);
+    document.getElementById('copyBtn').classList.add('flash');
+    setTimeout(()=>document.getElementById('copyBtn').classList.remove('flash'),500);
+  });
+
+  /* ─── UPDATE SUMMARY UI ─── */
+  function updateSummary(){
+    const list = document.getElementById('summaryList');
+    const exBox = document.getElementById('exampleBox');
+    const exText = document.getElementById('exampleText');
+
+    if(!entries.length){
+      list.innerHTML = `<div class="sum-empty">${t().sumEmpty}</div>`;
+      exBox.style.display = 'none';
+      document.getElementById('sumAll').textContent = '0';
+      document.getElementById('tax30').textContent = '0';
+      document.getElementById('netRemain').textContent = '0';
+      return;
+    }
+
+    let html = '';
+    let total = 0;
+
+    const personGroups = groupPersonEntries(entries.filter(e=>e.type==='person'));
+    const psGroups = groupPsEntries(entries.filter(e=>e.type==='ps'));
+
+    personGroups.forEach(g => {
+      const bonusSum = (g.bonuses||[]).reduce((s,b)=>s+b.val, 0);
+      const perKill = g.unit + bonusSum;
+      const v = perKill * g.count;
+      total += v;
+
+      const bonusTagsHtml = (g.bonuses||[]).length > 0
+        ? `<div class="bonus-tags">${g.bonuses.map(b=>`<span class="bonus-tag">${b.label} +${fmtShort(b.val)}</span>`).join('')}</div>`
+        : '';
+
+      const detailText = bonusSum > 0
+        ? `×${g.count} @ ${fmtShort(g.unit)} + ${fmtShort(bonusSum)}`
+        : `×${g.count} @ ${fmtShort(g.unit)}`;
+
+      html += `<div class="sum-item">
+        <div class="si-left">
+          <span class="si-name">👤 ${g.name}</span>
+          ${bonusTagsHtml}
+        </div>
+        <span class="si-detail">${detailText}</span>
+        <span class="si-val">${fmtShort(v)}</span>
+        <button class="del-entry-btn" data-ids="${g.ids.join(',')}" title="Remove one">✕</button>
+      </div>`;
+    });
+
+    psGroups.forEach(g => {
+      const v = g.unit * g.count; total += v;
+      html += `<div class="sum-item clan">
+        <div class="si-left">
+          <span class="si-name">🔴 [PS:${g.ps/1000}k] ${g.family}</span>
+        </div>
+        <span class="si-detail">×${g.count} @ ${fmtShort(g.unit)}</span>
+        <span class="si-val">${fmtShort(v)}</span>
+        <button class="del-entry-btn" data-ids="${g.ids.join(',')}" title="Remove one">✕</button>
+      </div>`;
+    });
+
+    list.innerHTML = html;
+
+    list.querySelectorAll('.del-entry-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const ids = btn.dataset.ids.split(',').map(Number);
+        const removeId = ids[ids.length - 1];
+        entries = entries.filter(e => e.id !== removeId);
+        history = history.filter(id => id !== removeId);
+        buildHunterGrid();
+        updateSummary();
+      });
+    });
+
+    const tax = Math.round(total * 0.30);
+    const net = total - tax;
+    document.getElementById('sumAll').textContent = fmt(total);
+    document.getElementById('tax30').textContent = fmt(tax);
+    document.getElementById('netRemain').textContent = fmt(net);
+
+    const lines = buildCopyText().split('\n');
+    const highlighted = lines.map(line => {
+      if(line.includes('丶')||line.includes('ぷ')||line.startsWith('[PS')){
+        return `<span class="hi-clan">${line}</span>`;
       }
-
-      function updateEntriesSummary(){
-        if(entries.length === 0){
-          summaryBox.innerHTML = `<div class="small" id="summaryHint">${texts[currentLang].summaryEmpty}</div>`;
-          const sh = document.getElementById('summaryHint');
-          if(sh) sh.textContent = texts[currentLang].summaryEmpty;
-          sumAllEl.textContent = '0';
-          tax30El.textContent = '0';
-          netRemainEl.textContent = '0';
-          sumAllShortEl.textContent = 'total = 0M';
-          return;
-        }
-
-        let html = '';
-        let totalAll = 0;
-
-        const personEntries = entries.filter(e => e.type === 'person');
-        const psEntries = entries.filter(e => e.type === 'ps');
-
-        personEntries.forEach(entry => {
-          const lineTotal = entry.unit * entry.count;
-          totalAll += lineTotal;
-          html += `
-            <div class="history-item">
-              <div class="label">${entry.person} x ${entry.count} = ${formatShort(lineTotal)}</div>
-            </div>
-          `;
-        });
-
-        psEntries.forEach(entry => {
-          const lineTotal = entry.unit * entry.count;
-          totalAll += lineTotal;
-          const psLabel = `PS:${entry.ps/1000} k+`;
-          html += `
-            <div class="history-item">
-              <div class="label">[${psLabel}] ${entry.family} x ${entry.count} = ${formatShort(lineTotal)}</div>
-            </div>
-          `;
-        });
-
-        summaryBox.innerHTML = html;
-
-        const tax = Math.round(totalAll * 0.30);
-        const remain = totalAll - tax;
-        sumAllEl.textContent = formatNumber(totalAll);
-        tax30El.textContent = formatNumber(tax);
-        netRemainEl.textContent = formatNumber(remain);
-        sumAllShortEl.textContent = `total = ${formatShort(totalAll)}`;
+      if(line.startsWith(t().totalShort)||line.startsWith('total')){
+        return `<span class="hi-total">${line}</span>`;
       }
-
-      function updateDisplay(){
-        // ฟังก์ชันนี้ไม่ต้องอัปเดต UI แล้ว แต่เก็บไว้เผื่อขยายต่อในอนาคต
-        const base = currentPerson ? BASE_BOUNTY : 0;
-        const bonus = currentPs ? (psToDs[currentPs] || 0) : 0;
-        const total = base + bonus;
+      if(line.trim() !== '') {
+        return `<span class="hi-name">${line}</span>`;
       }
+      return line;
+    });
+    exText.innerHTML = highlighted.join('\n');
+    exBox.style.display = 'block';
+  }
 
-      function setActive(buttons, activeBtn){
-        buttons.forEach(btn => {
-          if(btn === activeBtn){
-            btn.classList.add('active');
-          } else {
-            btn.classList.remove('active');
-          }
-        });
-      }
+  /* ─── LANGUAGE ─── */
+  function applyLang(){
+    const tx = t();
+    document.getElementById('titleSub').textContent = tx.titleSub;
+    document.getElementById('hunterHeader').textContent = tx.hunterHeader;
+    document.getElementById('bonusHeader').textContent = tx.bonusHeader;
+    document.getElementById('clanHeader').textContent = tx.clanHeader;
+    document.getElementById('summaryTitle').textContent = tx.summaryTitle;
+    document.getElementById('labelTotal').textContent = tx.labelTotal;
+    document.getElementById('labelTax').textContent = tx.labelTax;
+    document.getElementById('labelNet').textContent = tx.labelNet;
+    document.getElementById('undoLabel').textContent = tx.undoLabel;
+    document.getElementById('clearLabel').textContent = tx.clearLabel;
+    document.getElementById('copyLabel').textContent = tx.copyLabel;
+    document.getElementById('addHunterLabel').textContent = tx.addHunterLabel;
+    document.getElementById('exTitle').textContent = tx.exTitle;
+    document.getElementById('newHunterName').placeholder = tx.namePH;
+    document.getElementById('newHunterPrice').placeholder = tx.pricePH;
+    document.getElementById('addHunterBtn').textContent = tx.addBtn;
+    updateSummary();
+  }
 
-      personButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          currentPerson = btn.getAttribute('data-person');
-          setActive(personButtons, btn);
-          // คลิกชื่อ = เพิ่มค่าหัวตามจำนวนที่กำหนดต่อครั้ง
-          const base = personBounties[currentPerson] || BASE_BOUNTY;
-          const existingIndex = entries.findIndex(e => e.type === 'person' && e.person === currentPerson);
-          if(existingIndex !== -1){
-            entries[existingIndex].count += 1;
-          } else {
-            entries.push({ type: 'person', person: currentPerson, unit: base, count: 1 });
-          }
-          historyStack.push({ type: 'person', person: currentPerson });
-          updateDisplay();
-          updateEntriesSummary();
-        });
-      });
+  document.getElementById('langSelect').addEventListener('change', e => {
+    lang = e.target.value;
+    applyLang();
+  });
 
-      familyButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          currentFamily = btn.getAttribute('data-family');
-          setActive(familyButtons, btn);
-          updateDisplay();
-        });
-      });
+  /* ─── INIT ─── */
+  buildHunterGrid();
+  updateSummary();
 
-      psButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const psVal = parseInt(btn.getAttribute('data-ps'), 10) || null;
-          currentPs = psVal;
-          setActive(psButtons, btn);
-          const bonus = currentPs ? (psToDs[currentPs] || 0) : 0;
-          
-          // หา clan จากปุ่ม PS ที่คลิก (โดยดูจาก row เดียวกัน)
-          const row = btn.closest('div[style*="display:flex"]');
-          const familyBtn = row.querySelector('.family-btn');
-          const family = familyBtn ? familyBtn.getAttribute('data-family') : null;
-          
-          if(!family){
-            alert(texts[currentLang].alertSelectClan);
-            return;
-          }
-
-          // คลิก PS พร้อมตระกูล = เพิ่ม DS ต่อครั้ง
-          const existingIndex = entries.findIndex(e => e.type === 'ps' && e.family === family && e.ps === currentPs);
-          if(existingIndex !== -1){
-            entries[existingIndex].count += 1;
-          } else {
-            entries.push({ type: 'ps', family: family, ps: currentPs, unit: bonus, count: 1 });
-          }
-
-          historyStack.push({ type: 'ps', family: family, ps: currentPs });
-          updateDisplay();
-          updateEntriesSummary();
-        });
-      });
-
-      undoEntryBtn.addEventListener('click', () => {
-        if(historyStack.length === 0) return;
-        const last = historyStack.pop();
-
-        if(last.type === 'person'){
-          const idx = entries.findIndex(e => e.type === 'person' && e.person === last.person);
-          if(idx !== -1){
-            entries[idx].count -= 1;
-            if(entries[idx].count <= 0){
-              entries.splice(idx, 1);
-            }
-          }
-        } else if(last.type === 'ps'){
-          const idx = entries.findIndex(e => e.type === 'ps' && e.family === last.family && e.ps === last.ps);
-          if(idx !== -1){
-            entries[idx].count -= 1;
-            if(entries[idx].count <= 0){
-              entries.splice(idx, 1);
-            }
-          }
-        }
-
-        updateEntriesSummary();
-      });
-
-      clearEntriesBtn.addEventListener('click', () => {
-        if(entries.length === 0) return;
-        if(confirm(texts[currentLang].confirmClear)){
-          entries = [];
-          updateEntriesSummary();
-        }
-      });
-
-      copySummaryBtn.addEventListener('click', async () => {
-        if(entries.length === 0){
-          alert(texts[currentLang].alertNoEntry);
-          return;
-        }
-
-        let lines = [];
-        let totalAll = 0;
-
-        const personEntries = entries.filter(e => e.type === 'person');
-        const psEntries = entries.filter(e => e.type === 'ps');
-
-        personEntries.forEach(entry => {
-          const lineTotal = entry.unit * entry.count;
-          totalAll += lineTotal;
-          lines.push(`${entry.person} x ${entry.count} = ${formatShort(lineTotal)}`);
-        });
-
-        psEntries.forEach(entry => {
-          const lineTotal = entry.unit * entry.count;
-          totalAll += lineTotal;
-          const psLabel = `PS:${entry.ps/1000} k+`;
-          lines.push(`[${psLabel}] ${entry.family} x ${entry.count} = ${formatShort(lineTotal)}`);
-        });
-
-        lines.push('', `total = ${formatShort(totalAll)}`);
-
-        const text = lines.join('\n');
-
-        try{
-          await navigator.clipboard.writeText(text);
-          alert(texts[currentLang].alertCopied);
-        }catch(e){
-          prompt(texts[currentLang].promptCopy, text);
-        }
-      });
-
-      langSelect.addEventListener('change', () => {
-        applyLanguage(langSelect.value);
-        updateEntriesSummary();
-      });
-
-      applyLanguage(currentLang);
-      updateDisplay();
-      updateEntriesSummary();
-    })();
-  </script>
+})();
+</script>
 </body>
 </html>
