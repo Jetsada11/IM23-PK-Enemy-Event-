@@ -73,6 +73,7 @@
       font-size: 11px; letter-spacing: 0.18em;
       color: var(--muted); margin-top: 3px;
     }
+    .hdr-right { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
     .lang-wrap { display: flex; align-items: center; gap: 10px; }
     .lang-label { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
     .lang-select {
@@ -82,6 +83,101 @@
       font-size: 13px; font-weight: 600; cursor: pointer; outline: none;
     }
     .lang-select option { background: #1a2233; color: var(--text); }
+
+    /* Role selector */
+    .role-wrap { display: flex; align-items: center; gap: 10px; }
+    .role-label { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+    .role-select {
+      background: var(--panel2); color: var(--cyan);
+      border: 1px solid rgba(0,212,255,0.35); border-radius: 6px;
+      padding: 6px 14px; font-family: 'Exo 2', sans-serif;
+      font-size: 13px; font-weight: 600; cursor: pointer; outline: none;
+    }
+    .role-select option { background: #1a2233; color: var(--text); }
+    .role-badge {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; letter-spacing: 0.12em;
+      padding: 3px 10px; border-radius: 20px;
+    }
+    .role-badge.user { background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.3); color: var(--cyan); }
+    .role-badge.admin { background: rgba(255,180,50,0.15); border: 1px solid rgba(255,180,50,0.5); color: var(--gold-bright); }
+
+    /* Modal overlay */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 9000;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity .2s;
+    }
+    .modal-overlay.show { opacity: 1; pointer-events: all; }
+    .modal-box {
+      background: linear-gradient(160deg, #141e2c, #0e151e);
+      border: 1px solid rgba(255,180,50,0.3);
+      border-radius: 14px;
+      padding: 32px 28px;
+      min-width: 320px;
+      box-shadow: 0 0 60px rgba(255,180,50,0.15);
+      position: relative;
+    }
+    .modal-box::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+      border-radius: 14px 14px 0 0;
+    }
+    .modal-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 18px; font-weight: 700; letter-spacing: 0.12em;
+      color: var(--gold); margin-bottom: 6px;
+    }
+    .modal-sub {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; color: var(--muted); letter-spacing: 0.1em;
+      margin-bottom: 20px;
+    }
+    .modal-input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 10px 14px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px; color: var(--text);
+      outline: none; margin-bottom: 8px;
+      transition: border-color .15s;
+    }
+    .modal-input:focus { border-color: var(--gold-dim); }
+    .modal-error {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px; color: var(--red);
+      min-height: 16px; margin-bottom: 12px;
+    }
+    .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+    .modal-btn {
+      padding: 9px 20px; border-radius: 7px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 14px; font-weight: 700; letter-spacing: 0.05em;
+      cursor: pointer; border: 1px solid; transition: all .15s;
+    }
+    .modal-btn.cancel { background: transparent; border-color: rgba(255,255,255,0.12); color: var(--muted); }
+    .modal-btn.cancel:hover { border-color: rgba(255,255,255,0.3); color: var(--text); }
+    .modal-btn.confirm {
+      background: linear-gradient(135deg, #c87d10, #ffb432);
+      border-color: var(--gold); color: #000;
+    }
+    .modal-btn.confirm:hover { box-shadow: var(--glow-gold); }
+
+    /* Edit modal */
+    .edit-modal-box { min-width: 380px; }
+    .edit-form-row { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; }
+    .edit-form-label {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 11px; color: var(--muted);
+      min-width: 50px; letter-spacing: 0.08em;
+    }
+
+    /* Main grid */
     .main-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -149,6 +245,21 @@
       color: var(--gold); font-family: 'Share Tech Mono', monospace;
     }
     .hunter-btn .h-count:empty { display: none; }
+    /* Admin action buttons on hunter card */
+    .hunter-btn .h-admin-btns {
+      display: flex; gap: 4px; margin-top: 4px;
+    }
+    .h-edit-btn, .h-del-btn {
+      background: transparent; border: none;
+      font-size: 11px; cursor: pointer; padding: 1px 5px;
+      border-radius: 4px; line-height: 1;
+      transition: all .15s;
+    }
+    .h-edit-btn { color: var(--cyan); }
+    .h-edit-btn:hover { background: rgba(0,212,255,0.12); }
+    .h-del-btn { color: var(--red); }
+    .h-del-btn:hover { background: rgba(255,60,60,0.12); }
+
     .add-hunter-row { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
     .gh-input {
       flex: 1; min-width: 100px;
@@ -175,6 +286,9 @@
       transition: all .15s;
     }
     .add-btn:hover { background: rgba(255,180,50,0.25); box-shadow: var(--glow-gold); }
+    .admin-only { display: none; }
+    body.is-admin .admin-only { display: flex; }
+
     .bonus-sections { display: flex; flex-direction: column; gap: 14px; }
     .bonus-sec-title {
       font-family: 'Share Tech Mono', monospace;
@@ -338,17 +452,8 @@
       transition: all .3s ease; z-index: 1000;
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-    .remove-btn {
-      background: transparent; border: none;
-      color: var(--muted); font-size: 12px; cursor: pointer;
-      margin-left: 2px; line-height: 1;
-      transition: color .1s;
-    }
-    .remove-btn:hover { color: var(--red); }
     .sec-div { height: 1px; background: var(--border); margin: 14px 0; }
-    .bonus-tags {
-      display: flex; flex-wrap: wrap; gap: 3px;
-    }
+    .bonus-tags { display: flex; flex-wrap: wrap; gap: 3px; }
     .bonus-tag {
       font-family: 'Share Tech Mono', monospace;
       font-size: 10px; padding: 1px 5px;
@@ -356,7 +461,6 @@
       border: 1px solid rgba(255,180,50,0.3);
       border-radius: 3px; color: var(--gold-dim);
     }
-    /* Delete row button in summary */
     .del-entry-btn {
       background: transparent; border: none;
       color: var(--muted); font-size: 14px; cursor: pointer;
@@ -377,12 +481,24 @@
         <div class="title-sub" id="titleSub">WANTED · DEAD OR ALIVE · TAX 30%</div>
       </div>
     </div>
-    <div class="lang-wrap">
-      <span class="lang-label">Lang</span>
-      <select id="langSelect" class="lang-select">
-        <option value="en">English</option>
-        <option value="th">ไทย</option>
-      </select>
+    <div class="hdr-right">
+      <!-- Role selector -->
+      <div class="role-wrap">
+        <span class="role-label" id="roleLabel">Role</span>
+        <select id="roleSelect" class="role-select">
+          <option value="user">👤 User</option>
+          <option value="admin">🔐 Admin</option>
+        </select>
+        <span class="role-badge user" id="roleBadge">USER</span>
+      </div>
+      <!-- Lang selector -->
+      <div class="lang-wrap">
+        <span class="lang-label">Lang</span>
+        <select id="langSelect" class="lang-select">
+          <option value="en">English</option>
+          <option value="th">ไทย</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -391,9 +507,9 @@
     <div class="panel">
       <div class="panel-title"><span class="dot green"></span><span id="hunterHeader">HUNTER TARGETS</span></div>
       <div class="hunter-grid" id="hunterGrid"></div>
-      <div class="sec-div"></div>
-      <div style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:8px;" id="addHunterLabel">ADD CUSTOM TARGET</div>
-      <div class="add-hunter-row">
+      <div class="sec-div admin-only"></div>
+      <div class="admin-only" style="font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.12em;color:var(--muted);margin-bottom:8px;" id="addHunterLabel">ADD CUSTOM TARGET</div>
+      <div class="add-hunter-row admin-only">
         <input class="gh-input" id="newHunterName" placeholder="Name" />
         <input class="gh-input price" id="newHunterPrice" placeholder="Price (M)" type="number" min="0.5" step="0.5" />
         <button class="add-btn" id="addHunterBtn">＋ ADD</button>
@@ -510,64 +626,114 @@
 
 <div class="toast" id="toast"></div>
 
+<!-- Password Modal -->
+<div class="modal-overlay" id="pwModal">
+  <div class="modal-box">
+    <div class="modal-title">🔐 ADMIN ACCESS</div>
+    <div class="modal-sub" id="pwModalSub">ENTER ADMINISTRATOR PASSWORD</div>
+    <input class="modal-input" type="password" id="pwInput" placeholder="Password" autocomplete="off" />
+    <div class="modal-error" id="pwError"></div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" id="pwCancel">CANCEL</button>
+      <button class="modal-btn confirm" id="pwConfirm">UNLOCK</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Hunter Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box edit-modal-box">
+    <div class="modal-title" id="editModalTitle">✏️ EDIT TARGET</div>
+    <div class="modal-sub">ADMIN · MODIFY TARGET DATA</div>
+    <div class="edit-form-row">
+      <span class="edit-form-label">NAME</span>
+      <input class="modal-input" id="editName" placeholder="Hunter name" style="margin-bottom:0;flex:1;" />
+    </div>
+    <div class="edit-form-row" style="margin-top:10px;">
+      <span class="edit-form-label">PRICE</span>
+      <input class="modal-input" id="editPrice" placeholder="Price in M (e.g. 2 = 2M)" type="number" min="0.1" step="0.1" style="margin-bottom:0;flex:1;" />
+    </div>
+    <div class="modal-error" id="editError" style="margin-top:8px;"></div>
+    <div class="modal-btns" style="margin-top:4px;">
+      <button class="modal-btn cancel" id="editCancel">CANCEL</button>
+      <button class="modal-btn confirm" id="editConfirm">SAVE</button>
+    </div>
+  </div>
+</div>
+
 <script>
 (function(){
-
+  const ADMIN_PASS = 'hof@S777';
   const STORAGE_KEY = 'bountyBoard_customHunters';
+  const DEFAULT_STORAGE_KEY = 'bountyBoard_defaultHunters';
 
-  const DEFAULT_HUNTERS = [
-    { name: 'xBenedettta',  price: 2000000, editable: false },
-    { name: 'Sweet potato', price: 2000000, editable: false },
-    { name: '忠Gen',         price: 2000000, editable: false },
-    { name: 'Estelle Rae',  price: 2000000, editable: false },
-    { name: 'SHyeSun',      price: 1000000, editable: false },
-    { name: 'ATOWN01',      price: 1000000, editable: false },
-    { name: 'Nneon024',     price: 1000000, editable: false },
+  const HARDCODED_DEFAULTS = [
+    { name: 'xBenedettta',  price: 2000000 },
+    { name: 'Sweet potato', price: 2000000 },
+    { name: '忠Gen',         price: 2000000 },
+    { name: 'Estelle Rae',  price: 2000000 },
+    { name: 'SHyeSun',      price: 1000000 },
+    { name: 'ATOWN01',      price: 1000000 },
+    { name: 'Nneon024',     price: 1000000 },
   ];
 
   const psToDs = { 250000: 100000, 280000: 200000, 300000: 500000 };
   const BONUS_IDS = ['cb-RB','cb-YB','cb-GB','cb-LC12','cb-LC3','cb-WB','cb-PGT'];
 
+  let isAdmin = false;
+  let editingHunterOrigName = null;
+
+  /* ── STORAGE: default hunters (editable by admin) ── */
+  function loadDefaultHunters() {
+    try {
+      const raw = localStorage.getItem(DEFAULT_STORAGE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch(e) {}
+    return HARDCODED_DEFAULTS.map(h => ({...h}));
+  }
+  function saveDefaultHunters(list) {
+    localStorage.setItem(DEFAULT_STORAGE_KEY, JSON.stringify(list));
+  }
+
+  /* ── STORAGE: custom hunters ── */
   function loadCustomHunters() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (!raw) return [];
-      return JSON.parse(raw).map(h => ({ ...h, editable: true }));
+      return JSON.parse(raw);
     } catch(e) { return []; }
   }
-
   function saveCustomHunters() {
-    try {
-      const custom = hunters.filter(h => h.editable);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(custom));
-    } catch(e) {}
+    const custom = hunters.filter(h => h.editable);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(custom));
   }
 
-  let hunters = [
-    ...DEFAULT_HUNTERS.map(h => ({...h})),
-    ...loadCustomHunters()
-  ];
+  /* Build unified hunters list */
+  function buildHuntersList() {
+    const defaults = loadDefaultHunters().map(h => ({ ...h, editable: false }));
+    const custom = loadCustomHunters().map(h => ({ ...h, editable: true }));
+    hunters = [...defaults, ...custom];
+  }
+
+  let hunters = [];
+  buildHuntersList();
 
   let entries = [];
   let history = [];
   let nextId = 1;
-
   function newId() { return nextId++; }
 
-  /* ─── ACTIVE BONUSES SNAPSHOT ─── */
+  /* ── ACTIVE BONUSES ── */
   function getActiveBonuses() {
     return BONUS_IDS
-      .filter(id => {
-        const cb = document.getElementById(id);
-        return cb && cb.checked;
-      })
+      .filter(id => { const cb = document.getElementById(id); return cb && cb.checked; })
       .map(id => {
         const cb = document.getElementById(id);
         return { key: id, label: cb.dataset.label, val: parseInt(cb.dataset.val) };
       });
   }
 
-  /* ─── TEXTS ─── */
+  /* ── TEXTS ── */
   const T = {
     en: {
       titleSub: 'WANTED · DEAD OR ALIVE · TAX 30%',
@@ -591,6 +757,9 @@
       toastNoEntry: 'No entries to copy',
       confirmClear: 'Clear all bounty entries?',
       totalShort: 'total',
+      roleLabel: 'Role',
+      pwSub: 'ENTER ADMINISTRATOR PASSWORD',
+      pwWrong: '✕ Incorrect password',
     },
     th: {
       titleSub: 'ตั้งค่าหัว · หักภาษี 30%',
@@ -614,20 +783,22 @@
       toastNoEntry: 'ยังไม่มีรายการ',
       confirmClear: 'ล้างรายการทั้งหมด?',
       totalShort: 'รวม',
+      roleLabel: 'บทบาท',
+      pwSub: 'กรอกรหัสผ่านผู้ดูแลระบบ',
+      pwWrong: '✕ รหัสผ่านไม่ถูกต้อง',
     }
   };
 
   let lang = 'en';
   const t = () => T[lang];
 
-  /* ─── HELPERS ─── */
+  /* ── HELPERS ── */
   function fmt(n) { return new Intl.NumberFormat('en-US').format(n); }
   function fmtShort(n) {
     if(n >= 1e6){ const m = n/1e6; return (Number.isInteger(m)?m:m.toFixed(1).replace(/\.0$/,''))+'M'; }
     if(n >= 1e3){ const k = n/1e3; return (Number.isInteger(k)?k:k.toFixed(1).replace(/\.0$/,''))+'K'; }
     return String(n);
   }
-
   function showToast(msg){
     const el = document.getElementById('toast');
     el.textContent = msg;
@@ -635,47 +806,127 @@
     setTimeout(()=>el.classList.remove('show'), 2000);
   }
 
-  function entryValue(e) {
-    if(e.type === 'person') {
-      const bonusSum = (e.bonuses||[]).reduce((s,b)=>s+b.val, 0);
-      return e.unit + bonusSum;
+  /* ── ROLE UI ── */
+  function setAdminMode(on) {
+    isAdmin = on;
+    if (on) {
+      document.body.classList.add('is-admin');
+      document.getElementById('roleBadge').textContent = 'ADMIN';
+      document.getElementById('roleBadge').className = 'role-badge admin';
+    } else {
+      document.body.classList.remove('is-admin');
+      document.getElementById('roleBadge').textContent = 'USER';
+      document.getElementById('roleBadge').className = 'role-badge user';
     }
-    return e.unit;
+    buildHunterGrid();
   }
 
-  function bonusKey(bonuses) {
-    return (bonuses||[]).map(b=>b.key).sort().join(',');
+  /* ── PASSWORD MODAL ── */
+  const pwModal = document.getElementById('pwModal');
+  const pwInput = document.getElementById('pwInput');
+  const pwError = document.getElementById('pwError');
+
+  function openPwModal() {
+    pwInput.value = '';
+    pwError.textContent = '';
+    pwModal.classList.add('show');
+    setTimeout(() => pwInput.focus(), 150);
+  }
+  function closePwModal() {
+    pwModal.classList.remove('show');
+    // revert select back to user
+    document.getElementById('roleSelect').value = 'user';
+  }
+  function tryUnlock() {
+    if (pwInput.value === ADMIN_PASS) {
+      pwModal.classList.remove('show');
+      setAdminMode(true);
+    } else {
+      pwError.textContent = t().pwWrong;
+      pwInput.value = '';
+      pwInput.focus();
+      pwInput.style.borderColor = 'var(--red)';
+      setTimeout(() => { pwInput.style.borderColor = ''; }, 800);
+    }
   }
 
-  function groupPersonEntries(personEntries) {
-    const map = new Map();
-    personEntries.forEach(e => {
-      const key = e.name + '|' + bonusKey(e.bonuses);
-      if(map.has(key)) {
-        map.get(key).count++;
-        map.get(key).ids.push(e.id);
-      } else {
-        map.set(key, { name: e.name, unit: e.unit, bonuses: e.bonuses, count: 1, ids: [e.id] });
-      }
-    });
-    return Array.from(map.values());
+  document.getElementById('pwCancel').addEventListener('click', closePwModal);
+  document.getElementById('pwConfirm').addEventListener('click', tryUnlock);
+  pwInput.addEventListener('keydown', e => { if(e.key==='Enter') tryUnlock(); });
+  pwModal.addEventListener('click', e => { if(e.target === pwModal) closePwModal(); });
+
+  document.getElementById('roleSelect').addEventListener('change', e => {
+    if (e.target.value === 'admin') {
+      openPwModal();
+    } else {
+      setAdminMode(false);
+    }
+  });
+
+  /* ── EDIT MODAL ── */
+  const editModal = document.getElementById('editModal');
+  const editNameEl = document.getElementById('editName');
+  const editPriceEl = document.getElementById('editPrice');
+  const editError = document.getElementById('editError');
+
+  function openEditModal(name) {
+    const h = hunters.find(h => h.name === name);
+    if (!h) return;
+    editingHunterOrigName = name;
+    editNameEl.value = h.name;
+    editPriceEl.value = h.price / 1e6;
+    editError.textContent = '';
+    editModal.classList.add('show');
+    setTimeout(() => editNameEl.focus(), 150);
+  }
+  function closeEditModal() {
+    editModal.classList.remove('show');
+    editingHunterOrigName = null;
+  }
+  function saveEdit() {
+    const newName = editNameEl.value.trim();
+    const newPriceM = parseFloat(editPriceEl.value);
+    if (!newName) { editError.textContent = '✕ Name required'; editNameEl.focus(); return; }
+    if (isNaN(newPriceM) || newPriceM <= 0) { editError.textContent = '✕ Invalid price'; editPriceEl.focus(); return; }
+
+    const origName = editingHunterOrigName;
+    const newPrice = Math.round(newPriceM * 1e6);
+
+    // Update in hunters list
+    const h = hunters.find(h => h.name === origName);
+    if (!h) { closeEditModal(); return; }
+
+    const oldName = h.name;
+    h.name = newName;
+    h.price = newPrice;
+
+    // Persist
+    if (h.editable) {
+      saveCustomHunters();
+    } else {
+      // Save modified defaults
+      const defaults = loadDefaultHunters();
+      const d = defaults.find(d => d.name === oldName);
+      if (d) { d.name = newName; d.price = newPrice; }
+      saveDefaultHunters(defaults);
+    }
+
+    // Update existing entries that reference old name
+    entries.forEach(e => { if(e.type==='person' && e.name===oldName) { e.name=newName; e.unit=newPrice; } });
+
+    closeEditModal();
+    buildHunterGrid();
+    updateSummary();
+    showToast('✓ Saved');
   }
 
-  function groupPsEntries(psEntries) {
-    const map = new Map();
-    psEntries.forEach(e => {
-      const key = e.family + '|' + e.ps;
-      if(map.has(key)) {
-        map.get(key).count++;
-        map.get(key).ids.push(e.id);
-      } else {
-        map.set(key, { family: e.family, ps: e.ps, unit: e.unit, count: 1, ids: [e.id] });
-      }
-    });
-    return Array.from(map.values());
-  }
+  document.getElementById('editCancel').addEventListener('click', closeEditModal);
+  document.getElementById('editConfirm').addEventListener('click', saveEdit);
+  editModal.addEventListener('click', e => { if(e.target === editModal) closeEditModal(); });
+  editNameEl.addEventListener('keydown', e => { if(e.key==='Enter') editPriceEl.focus(); });
+  editPriceEl.addEventListener('keydown', e => { if(e.key==='Enter') saveEdit(); });
 
-  /* ─── BUILD HUNTER GRID ─── */
+  /* ── BUILD HUNTER GRID ── */
   function buildHunterGrid(){
     const grid = document.getElementById('hunterGrid');
     grid.innerHTML = '';
@@ -686,50 +937,68 @@
       btn.className = 'hunter-btn' + (count > 0 ? ' active' : '');
       btn.dataset.name = h.name;
 
+      const adminBtns = isAdmin
+        ? `<div class="h-admin-btns">
+            <button class="h-edit-btn" data-edit="${h.name}" title="Edit">✏️ Edit</button>
+            <button class="h-del-btn" data-remove="${h.name}" title="Delete">🗑</button>
+           </div>`
+        : '';
+
       btn.innerHTML = `
         <span class="h-count">${count > 0 ? 'x'+count : ''}</span>
-        <span>${h.name}${h.editable ? ` <button class="remove-btn" data-remove="${h.name}" title="Remove">✕</button>` : ''}</span>
+        <span>${h.name}</span>
         <span class="h-price">${fmtShort(h.price)}/kill</span>
+        ${adminBtns}
       `;
       grid.appendChild(btn);
     });
 
     grid.querySelectorAll('.hunter-btn').forEach(btn => {
       btn.addEventListener('click', e => {
-        if(e.target.classList.contains('remove-btn')) return;
+        if(e.target.classList.contains('h-edit-btn') || e.target.classList.contains('h-del-btn')) return;
+        if(e.target.closest('.h-edit-btn') || e.target.closest('.h-del-btn')) return;
         const name = btn.dataset.name;
         const hunter = hunters.find(h=>h.name===name);
         if(!hunter) return;
-
         const activeBonuses = getActiveBonuses();
         const id = newId();
         entries.push({ id, type:'person', name, unit: hunter.price, bonuses: activeBonuses });
         history.push(id);
-
         buildHunterGrid();
         updateSummary();
       });
     });
 
-    grid.querySelectorAll('.remove-btn').forEach(rb => {
+    grid.querySelectorAll('.h-edit-btn').forEach(eb => {
+      eb.addEventListener('click', e => {
+        e.stopPropagation();
+        openEditModal(eb.dataset.edit);
+      });
+    });
+
+    grid.querySelectorAll('.h-del-btn').forEach(rb => {
       rb.addEventListener('click', e => {
         e.stopPropagation();
         const name = rb.dataset.remove;
         hunters = hunters.filter(h=>h.name!==name);
         entries = entries.filter(e=>!(e.type==='person'&&e.name===name));
         history = history.filter(id => entries.find(e=>e.id===id));
+        // Remove from appropriate storage
         saveCustomHunters();
+        const defaults = loadDefaultHunters().filter(d => d.name !== name);
+        saveDefaultHunters(defaults);
         buildHunterGrid();
         updateSummary();
       });
     });
   }
 
-  /* ─── ADD HUNTER ─── */
+  /* ── ADD HUNTER (admin only) ── */
   document.getElementById('addHunterBtn').addEventListener('click', addHunter);
   document.getElementById('newHunterPrice').addEventListener('keydown', e=>{ if(e.key==='Enter') addHunter(); });
 
   function addHunter(){
+    if (!isAdmin) return;
     const nameEl = document.getElementById('newHunterName');
     const priceEl = document.getElementById('newHunterPrice');
     const name = nameEl.value.trim();
@@ -744,7 +1013,7 @@
     buildHunterGrid();
   }
 
-  /* ─── CHECKBOXES ─── */
+  /* ── CHECKBOXES ── */
   BONUS_IDS.forEach(id => {
     const cb = document.getElementById(id);
     const lbl = document.getElementById(id+'-label');
@@ -754,25 +1023,22 @@
     });
   });
 
-  /* ─── CLAN / PS BUTTONS ─── */
+  /* ── CLAN / PS BUTTONS ── */
   document.querySelectorAll('.ps-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const ps = parseInt(btn.dataset.ps);
       const family = btn.dataset.family;
       const ds = psToDs[ps] || 0;
-
       btn.closest('.clan-row').querySelectorAll('.ps-btn').forEach(b=>b.classList.remove('active'));
       btn.classList.add('active');
-
       const id = newId();
       entries.push({ id, type:'ps', family, ps, unit: ds });
       history.push(id);
-
       updateSummary();
     });
   });
 
-  /* ─── UNDO ─── */
+  /* ── UNDO ── */
   document.getElementById('undoBtn').addEventListener('click', () => {
     if(!history.length) return;
     const lastId = history.pop();
@@ -781,7 +1047,7 @@
     updateSummary();
   });
 
-  /* ─── CLEAR ─── */
+  /* ── CLEAR ── */
   document.getElementById('clearBtn').addEventListener('click', () => {
     if(!entries.length) return;
     if(!confirm(t().confirmClear)) return;
@@ -796,39 +1062,49 @@
     updateSummary();
   });
 
-  /* ─── COPY TEXT BUILDER ─── */
-  function buildCopyText(){
-    let lines = [];
-    let total = 0;
+  /* ── GROUPING ── */
+  function groupPersonEntries(personEntries) {
+    const map = new Map();
+    personEntries.forEach(e => {
+      const key = e.name + '|' + (e.bonuses||[]).map(b=>b.key).sort().join(',');
+      if(map.has(key)) { map.get(key).count++; map.get(key).ids.push(e.id); }
+      else map.set(key, { name: e.name, unit: e.unit, bonuses: e.bonuses, count: 1, ids: [e.id] });
+    });
+    return Array.from(map.values());
+  }
+  function groupPsEntries(psEntries) {
+    const map = new Map();
+    psEntries.forEach(e => {
+      const key = e.family + '|' + e.ps;
+      if(map.has(key)) { map.get(key).count++; map.get(key).ids.push(e.id); }
+      else map.set(key, { family: e.family, ps: e.ps, unit: e.unit, count: 1, ids: [e.id] });
+    });
+    return Array.from(map.values());
+  }
 
+  /* ── COPY TEXT ── */
+  function buildCopyText(){
+    let lines = [], total = 0;
     const personGroups = groupPersonEntries(entries.filter(e=>e.type==='person'));
     const psGroups = groupPsEntries(entries.filter(e=>e.type==='ps'));
-
     personGroups.forEach(g => {
       const bonusSum = (g.bonuses||[]).reduce((s,b)=>s+b.val, 0);
       const perKill = g.unit + bonusSum;
       const v = perKill * g.count;
       total += v;
-
-      const bonusPart = (g.bonuses||[]).length > 0
-        ? (g.bonuses.map(b=>b.label).join('') + ' ')
-        : '';
-
-      // ── แสดงแค่ชื่อ + จำนวน + ยอดรวม ไม่มี breakdown ──
+      const bonusPart = (g.bonuses||[]).length > 0 ? (g.bonuses.map(b=>b.label).join('')+' ') : '';
       lines.push(`${bonusPart}${g.name} x${g.count} = ${fmtShort(v)}`);
     });
-
     psGroups.forEach(g => {
       const v = g.unit * g.count; total += v;
       lines.push(`[PS:${g.ps/1000}k] ${g.family} x${g.count} = ${fmtShort(v)}`);
     });
-
     lines.push('');
     lines.push(`${t().totalShort} = ${fmtShort(total)}`);
     return lines.join('\n');
   }
 
-  /* ─── COPY BUTTON ─── */
+  /* ── COPY BUTTON ── */
   document.getElementById('copyBtn').addEventListener('click', async () => {
     if(!entries.length){ showToast(t().toastNoEntry); return; }
     const text = buildCopyText();
@@ -839,7 +1115,7 @@
     setTimeout(()=>document.getElementById('copyBtn').classList.remove('flash'),500);
   });
 
-  /* ─── UPDATE SUMMARY UI ─── */
+  /* ── UPDATE SUMMARY UI ── */
   function updateSummary(){
     const list = document.getElementById('summaryList');
     const exBox = document.getElementById('exampleBox');
@@ -854,9 +1130,7 @@
       return;
     }
 
-    let html = '';
-    let total = 0;
-
+    let html = '', total = 0;
     const personGroups = groupPersonEntries(entries.filter(e=>e.type==='person'));
     const psGroups = groupPsEntries(entries.filter(e=>e.type==='ps'));
 
@@ -865,15 +1139,12 @@
       const perKill = g.unit + bonusSum;
       const v = perKill * g.count;
       total += v;
-
       const bonusTagsHtml = (g.bonuses||[]).length > 0
         ? `<div class="bonus-tags">${g.bonuses.map(b=>`<span class="bonus-tag">${b.label} +${fmtShort(b.val)}</span>`).join('')}</div>`
         : '';
-
       const detailText = bonusSum > 0
         ? `×${g.count} @ ${fmtShort(g.unit)} + ${fmtShort(bonusSum)}`
         : `×${g.count} @ ${fmtShort(g.unit)}`;
-
       html += `<div class="sum-item">
         <div class="si-left">
           <span class="si-name">👤 ${g.name}</span>
@@ -898,7 +1169,6 @@
     });
 
     list.innerHTML = html;
-
     list.querySelectorAll('.del-entry-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         const ids = btn.dataset.ids.split(',').map(Number);
@@ -918,22 +1188,18 @@
 
     const lines = buildCopyText().split('\n');
     const highlighted = lines.map(line => {
-      if(line.includes('丶')||line.includes('ぷ')||line.startsWith('[PS')){
+      if(line.includes('丶')||line.includes('ぷ')||line.startsWith('[PS'))
         return `<span class="hi-clan">${line}</span>`;
-      }
-      if(line.startsWith(t().totalShort)||line.startsWith('total')){
+      if(line.startsWith(t().totalShort)||line.startsWith('total'))
         return `<span class="hi-total">${line}</span>`;
-      }
-      if(line.trim() !== '') {
-        return `<span class="hi-name">${line}</span>`;
-      }
+      if(line.trim() !== '') return `<span class="hi-name">${line}</span>`;
       return line;
     });
     exText.innerHTML = highlighted.join('\n');
     exBox.style.display = 'block';
   }
 
-  /* ─── LANGUAGE ─── */
+  /* ── LANGUAGE ── */
   function applyLang(){
     const tx = t();
     document.getElementById('titleSub').textContent = tx.titleSub;
@@ -952,6 +1218,8 @@
     document.getElementById('newHunterName').placeholder = tx.namePH;
     document.getElementById('newHunterPrice').placeholder = tx.pricePH;
     document.getElementById('addHunterBtn').textContent = tx.addBtn;
+    document.getElementById('pwModalSub').textContent = tx.pwSub;
+    document.getElementById('roleLabel').textContent = tx.roleLabel;
     updateSummary();
   }
 
@@ -960,7 +1228,7 @@
     applyLang();
   });
 
-  /* ─── INIT ─── */
+  /* ── INIT ── */
   buildHunterGrid();
   updateSummary();
 
